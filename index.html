@@ -28,8 +28,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 6
 .nav-links{display:flex;gap:28px;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-secondary);}
 .nav-links a{text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px;}
 .nav-links a:hover{border-color:var(--gold);color:var(--olive-deep);}
-.nav-notify{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;background:var(--olive-deep);color:var(--cream);padding:12px 22px;text-decoration:none;transition:background .15s;}
-.nav-notify:hover{background:var(--olive);}
 
 /* hero */
 .hero{display:grid;grid-template-columns:1fr 1fr;min-height:88vh;border-bottom:1px solid var(--line);}
@@ -51,6 +49,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 6
 .notify-btn{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;background:var(--gold);color:var(--olive-deep);padding:14px 20px;border:none;cursor:pointer;white-space:nowrap;transition:background .15s;}
 .notify-btn:hover{background:var(--gold-light);}
 .notify-fine{font-size:12px;color:var(--olive-light);margin-top:10px;}
+.notify-fine.notify-error{color:#B3261E;}
 
 /* hero right */
 .hero-right{background:var(--olive-deep);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6vw 5vw;gap:28px;}
@@ -171,7 +170,6 @@ footer a:hover{color:var(--gold);}
     <a href="#find-us">Find us</a>
     <a href="#inner-circle">Inner circle</a>
   </div>
-  <a class="nav-notify" href="https://order.ricelyfe.com" target="_blank" rel="noopener">Order now</a>
 </nav>
 
 <section class="hero">
@@ -186,11 +184,12 @@ footer a:hover{color:var(--gold);}
       </div>
     </div>
     <div class="notify-block" id="notify">
-      <p class="notify-label">Order ahead for pickup or delivery</p>
-      <div class="notify-row">
-        <a class="notify-btn" href="https://order.ricelyfe.com" target="_blank" rel="noopener" style="text-align:center;text-decoration:none;flex:1;">Order now</a>
-      </div>
-      <p class="notify-fine">Torched to order. Walk-up window on Shotwell St, or order ahead.</p>
+      <p class="notify-label">Be the first to know when we open</p>
+      <form id="notify-form" class="notify-row">
+        <input class="notify-input" type="email" id="notify-email" name="email" placeholder="your@email.com" required>
+        <button class="notify-btn" id="notify-btn" type="submit">Notify me</button>
+      </form>
+      <p class="notify-fine" id="notify-fine">No spam. Just an opening day heads-up and the occasional drop.</p>
     </div>
   </div>
   <div class="hero-right">
@@ -244,7 +243,7 @@ footer a:hover{color:var(--gold);}
     <div class="menu-item"><p class="item-tag">Signature</p><p class="item-name">Chicken Tsukune Inari</p><p class="item-desc">Grilled chicken meatball, tare glaze, soft yolk, scallion.</p><div class="item-footer"><span class="item-num">No. 05</span><span class="item-price">$6</span></div></div>
     <div class="menu-item"><p class="item-tag">Bowl</p><p class="item-name">Bulgogi Rice Bowl</p><p class="item-desc">House bulgogi, charred kimchi, sesame, soft yolk, steamed rice.</p><div class="item-footer"><span class="item-num">No. 06</span><span class="item-price">$13</span></div></div>
   </div>
-  <p class="menu-note">Full menu drops at opening</p>
+  <p class="menu-note">Full menu drops at opening &mdash; sign up above to be first to see it</p>
 </section>
 
 <section class="collab-band">
@@ -268,7 +267,7 @@ footer a:hover{color:var(--gold);}
     <p class="program-label">First Wednesday of the month</p>
     <h3>Lab Day</h3>
     <p>Untested items, open to anyone who shows up. No promises it works. That&rsquo;s the point &mdash; we&rsquo;re finding out together, and the good ones earn a permanent spot.</p>
-    <a href="https://order.ricelyfe.com" target="_blank" rel="noopener">Order now &rarr;</a>
+    <a href="#notify">Get notified &rarr;</a>
   </div>
   <div class="program">
     <p class="program-label">Members only</p>
@@ -297,5 +296,42 @@ footer a:hover{color:var(--gold);}
   <span>3252 19th St &middot; Shotwell St window &middot; San Francisco, CA</span>
   <span><a href="#">Instagram</a></span>
 </footer>
+<script>
+(function(){
+  var form = document.getElementById('notify-form');
+  var input = document.getElementById('notify-email');
+  var btn = document.getElementById('notify-btn');
+  var fine = document.getElementById('notify-fine');
+  if (!form) return;
+  var defaultBtnText = btn.textContent;
+  var defaultFineText = fine.textContent;
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    fine.classList.remove('notify-error');
+    fine.textContent = defaultFineText;
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: input.value })
+    }).then(function(res){
+      if (!res.ok) throw new Error('Request failed');
+      return res.json();
+    }).then(function(){
+      input.disabled = true;
+      btn.textContent = 'You’re on the list ✓';
+      fine.textContent = 'You’re on the list. We’ll email you when we open.';
+    }).catch(function(){
+      btn.disabled = false;
+      btn.textContent = defaultBtnText;
+      fine.textContent = 'Something went wrong — please try again.';
+      fine.classList.add('notify-error');
+    });
+  });
+})();
+</script>
 </body>
 </html>
