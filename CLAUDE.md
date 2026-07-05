@@ -14,6 +14,9 @@ targeted mid-July 2026.
   the HTML (`data:image/png;base64,...`). There are no separate image asset
   files in this repo — if the logo needs to change, the base64 string inside
   `index.html` needs to be regenerated and swapped in-place.
+- `api/notify.js` — a Vercel serverless function (Node, `module.exports = async
+  (req, res) => {...}`, no framework). The only backend code in this repo; see
+  "Notify signup / Square sync" below.
 
 ## Deployment
 
@@ -57,12 +60,32 @@ targeted mid-July 2026.
   Delivery is being handled through Square (customer pays the delivery fee
   there) until further notice.
 
+## Notify signup / Square sync
+
+- The hero "Notify me" form (`#notify-form` in `index.html`) is live, real
+  functionality — not a placeholder. On submit it POSTs `{ email }` to
+  `/api/notify`, which upserts the address into Square's Customers API
+  (search by exact email, update if found, else create with
+  `preferences.email_unsubscribed = false` and `reference_id:
+  "ricelyfe-site-notify-form"`). Confirmed working end-to-end as of 2026-07 —
+  Craig has seen real signups land in Square.
+- Requires the `SQUARE_ACCESS_TOKEN` env var to be set in Vercel's project
+  settings (Production env). Without it, `/api/notify` returns a 500 and the
+  form shows the "Something went wrong" error state.
+- Square API version is pinned in code (`Square-Version: 2024-10-17` in
+  `api/notify.js`) — bump deliberately, not incidentally, if touching that
+  file.
+- The nav bar itself has no "Get notified" / "Order now" shortcut link — only
+  the hero form and the Lab Day section link to `#notify`.
+
 ## What this repo is NOT (yet)
 
-- No ordering functionality — "Order now" / notify buttons are placeholders
-  or link out, not an embedded checkout.
-- No CMS or database — every content change is a direct edit to
-  `index.html` and a git push.
+- No ordering/checkout functionality — "Order now" links (meta-row, Lab Day)
+  point out to `https://order.ricelyfe.com`, not an embedded checkout in this
+  site.
+- No CMS or database for content — every copy/menu change is a direct edit to
+  `index.html` and a git push. (The notify form is the one exception with a
+  real backend — see above.)
 - No connection to Square's Catalog API yet. Sold-out states, live pricing,
   and item availability are all manually maintained in the HTML for now.
   (Future direction under discussion: pull menu/availability from Square
