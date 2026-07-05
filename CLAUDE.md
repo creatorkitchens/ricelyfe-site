@@ -76,3 +76,11 @@ targeted mid-July 2026.
   patterns already in the file rather than introducing new layout systems.
 - After any change: commit and push to `main` to trigger the Vercel
   redeploy. No separate deploy command needed.
+- Craig sometimes edits `index.html` directly in Google Drive
+  (`My Drive/RICELYFE/index.html`, under the craig@ricelyfe.com account)
+  before asking for it to be copied into this repo. If asked to make a copy
+  edit, check whether an updated version already exists in Drive rather than
+  editing the repo's `index.html` in parallel — otherwise the two copies can
+  diverge. Local filesystem access to that Drive folder is blocked by macOS
+  permissions, so pulling it requires going through the Drive web UI
+  (download the file, then replace it in the repo).
