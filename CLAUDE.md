@@ -88,6 +88,28 @@ permit approval).
   create the Resend account — if that's not `craig@ricelyfe.com`, either
   verify a domain in Resend for a real `from` address, or set
   `NOTIFY_TO_EMAIL` to match the Resend account's own email.
+- Shared helpers live in `api/_lib/` (`square.js`, `resend.js`,
+  `pacific-time.js`) — Vercel doesn't treat underscore-prefixed paths under
+  `api/` as routes, so these are safe to `require()` from both `notify.js`
+  and `daily-signups.js` without becoming their own endpoints.
+
+## Daily signup report (`api/daily-signups.js`)
+
+- Runs on a Vercel Cron schedule defined in `vercel.json` (`0 7 * * *` UTC,
+  i.e. ~midnight Pacific year-round — the offset is computed dynamically so
+  it holds across the PST/PDT switch). Emails Craig via Resend with today's
+  signup count and the cumulative total, both counted from Square customers
+  with `reference_id: "ricelyfe-site-notify-form"`.
+- If `CRON_SECRET` is set in Vercel's env vars, the endpoint requires
+  `Authorization: Bearer <CRON_SECRET>` (Vercel's cron invoker sends this
+  automatically once the env var exists) — this stops anyone else from
+  hitting the endpoint and triggering emails/API calls on demand. Optional
+  but recommended; without it the endpoint has no auth of its own.
+- Vercel's Hobby plan allows cron jobs but the trigger time isn't
+  millisecond-precise — expect the email within roughly an hour of 07:00 UTC,
+  not exactly on the minute.
+- Uses the same `SQUARE_ACCESS_TOKEN` and Resend env vars as the notify
+  signup flow — no separate credentials to manage.
 
 ## What this repo is NOT (yet)
 
