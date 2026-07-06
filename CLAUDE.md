@@ -3,7 +3,9 @@
 Single-page "coming soon" landing site for Rice Lyfe — a Japanese-Korean fusion
 inari and rice bowl concept operating out of a walk-up window at Joey the Cat
 Arcade, 3252 19th Street (Shotwell St side), San Francisco. Soft opening
-targeted mid-July 2026.
+targeted late July 2026 (site copy has moved from "mid-July" → "second half of
+July" → "late July" as the timeline slipped; window is still waiting on SF
+permit approval).
 
 ## Structure
 
@@ -77,6 +79,15 @@ targeted mid-July 2026.
   file.
 - The nav bar itself has no "Get notified" / "Order now" shortcut link — only
   the hero form and the Lab Day section link to `#notify`.
+- On a successful signup, `api/notify.js` also emails Craig (`craig@ricelyfe.com`
+  by default, overridable via `NOTIFY_TO_EMAIL`) via Resend so he knows in
+  real time. Requires `RESEND_API_KEY` in Vercel's env vars — without it the
+  function just logs a warning and skips the notification (signup to Square
+  still succeeds). The `from` address defaults to Resend's sandbox
+  `onboarding@resend.dev`, which can only deliver to the email address used to
+  create the Resend account — if that's not `craig@ricelyfe.com`, either
+  verify a domain in Resend for a real `from` address, or set
+  `NOTIFY_TO_EMAIL` to match the Resend account's own email.
 
 ## What this repo is NOT (yet)
 

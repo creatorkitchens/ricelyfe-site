@@ -3,6 +3,38 @@ const { randomUUID } = require('crypto');
 const SQUARE_BASE = 'https://connect.squareup.com/v2';
 const SQUARE_VERSION = '2024-10-17';
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const NOTIFY_TO_EMAIL = process.env.NOTIFY_TO_EMAIL || 'craig@ricelyfe.com';
+const NOTIFY_FROM_EMAIL = process.env.NOTIFY_FROM_EMAIL || 'Rice Lyfe <onboarding@resend.dev>';
+
+async function sendSignupNotification(email) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error('notify: RESEND_API_KEY not set, skipping signup notification email');
+    return;
+  }
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: NOTIFY_FROM_EMAIL,
+        to: NOTIFY_TO_EMAIL,
+        subject: 'New Rice Lyfe signup',
+        text: `${email} just signed up to be notified when Rice Lyfe opens.`,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error('notify: Resend notification failed', res.status, await res.text());
+    }
+  } catch (err) {
+    console.error('notify: unexpected error sending signup notification', err);
+  }
+}
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -62,6 +94,7 @@ module.exports = async (req, res) => {
         return res.status(502).json({ error: 'Signup failed, please try again' });
       }
 
+      await sendSignupNotification(email);
       return res.status(200).json({ ok: true });
     }
 
@@ -81,6 +114,7 @@ module.exports = async (req, res) => {
       return res.status(502).json({ error: 'Signup failed, please try again' });
     }
 
+    await sendSignupNotification(email);
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('notify: unexpected error', err);
