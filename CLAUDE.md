@@ -1,11 +1,16 @@
 # Rice Lyfe Site
 
 Single-page "coming soon" landing site for Rice Lyfe — a Japanese-Korean fusion
-inari and rice bowl concept operating out of a walk-up window at Joey the Cat
-Arcade, 3252 19th Street (Shotwell St side), San Francisco. Soft opening
-targeted August 2026 (site copy has slipped from "mid-July" → "second half of
-July" → "late July" → "August" as the timeline has moved; window is still
-waiting on SF permit approval — expect this to keep shifting).
+inari and rice bowl concept operating out of a walk-up window at 478 Shotwell
+St, San Francisco. The kitchen is rented from Joey the Cat Arcade, but the
+arcade is NOT open to the public — do not write copy that invites people to
+enter the arcade or treats it as a second entrance. Customers were ringing
+the arcade's door looking for Rice Lyfe before this was corrected in the site
+copy (2026-07); the walk-up window on Shotwell is the only public access
+point. Soft opening targeted August 2026 (site copy has slipped from
+"mid-July" → "second half of July" → "late July" → "August" as the timeline
+has moved; window is still waiting on SF permit approval — expect this to
+keep shifting).
 
 ## Structure
 
